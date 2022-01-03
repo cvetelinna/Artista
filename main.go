@@ -1,19 +1,32 @@
 package main
 
 import (
-	"context"
+	"database/sql"
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v4"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 func main() {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("ARTISTA"))
+	conn, err := sql.Open("pgx", os.Getenv("ARTISTA"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+
+	defer conn.Close()
+
+	err = conn.Ping()
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Connected!")
+
+	//userRepo := users.NewRepo(conn)
+	//
+	//e := echo.New()
 
 }

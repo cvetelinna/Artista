@@ -8,8 +8,8 @@ const (
 )
 
 type User struct {
-	ID       string
-	Username string
-	Password string
-	Role     Role
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Role     Role   `json:"role"`
 }
