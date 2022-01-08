@@ -1,4 +1,4 @@
-package users
+package user
 
 import (
 	"Artista/domain"
@@ -16,9 +16,9 @@ func NewRepo(db *sql.DB) *pgUserRepo {
 	return &pgUserRepo{db: db}
 }
 
-type UserRepository interface {
+type Repository interface {
 	Insert(ctx context.Context, user *domain.User) error
-	Fetch(ctx context.Context, user *domain.User) error
+	Fetch(ctx context.Context, username string) (*domain.User, error)
 	Update(ctx context.Context, user *domain.User) (*domain.User, error)
 }
 
@@ -28,9 +28,13 @@ func (r *pgUserRepo) Insert(ctx context.Context, user *domain.User) error {
 	return err
 }
 
-func (r *pgUserRepo) Fetch(ctx context.Context, user *domain.User) (*domain.User, error) {
-	err := r.db.QueryRowContext(ctx, "SELECT username, password FROM users WHERE username=?", user.Username).Scan(&user.Username)
-	return user, err
+func (r *pgUserRepo) Fetch(ctx context.Context, username string) (*domain.User, error) {
+	user := domain.User{}
+	err := r.db.QueryRowContext(ctx, "SELECT username, password, role FROM users WHERE username=?", username).
+		Scan(&user.Username,
+			&user.Password,
+			&user.Role)
+	return &user, err
 }
 
 func (r *pgUserRepo) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
