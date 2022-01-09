@@ -30,14 +30,16 @@ func (r *pgUserRepo) Insert(ctx context.Context, user *domain.User) error {
 
 func (r *pgUserRepo) Fetch(ctx context.Context, username string) (*domain.User, error) {
 	user := domain.User{}
-	err := r.db.QueryRowContext(ctx, "SELECT username, password, role FROM users WHERE username=?", username).
-		Scan(&user.Username,
+	err := r.db.QueryRowContext(ctx, "SELECT id, username, password, role FROM users WHERE username=$1", username).
+		Scan(
+			&user.ID,
+			&user.Username,
 			&user.Password,
 			&user.Role)
 	return &user, err
 }
 
 func (r *pgUserRepo) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
-	err := r.db.QueryRowContext(ctx, "UPDATE username, password FROM users WHERE id=?", user.ID).Scan(&user.Username, &user.Password)
+	err := r.db.QueryRowContext(ctx, "UPDATE username, password FROM users WHERE id=$1", user.ID).Scan(&user.Username, &user.Password)
 	return user, err
 }

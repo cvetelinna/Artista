@@ -1,6 +1,6 @@
 create table users (
                        id uuid default uuid_generate_v4() primary key,
-                       username character varying NOT NULL,
+                       username character varying NOT NULL unique,
                        password character varying NOT NULL,
                        role int4 NOT NULL
 );
